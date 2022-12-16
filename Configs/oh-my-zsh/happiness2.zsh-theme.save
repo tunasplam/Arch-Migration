@@ -1,0 +1,17 @@
+down_brace=$'\u196c'
+
+# TODO increase font size for manjaro icon.
+user_icon=$'\u16c4'
+# 0-15 are set by pywal!
+term_default_bg="000"
+col1="007"
+col2="001"
+# TODO MAYBE A PHASE OF THE MOON INDICATOR?
+
+#local return_code="%(?..%?)"
+
+PROMPT="%{$FG[$col1]$BG[$col2]%} $us"
+# show error code on right side if something went awry.
+if [ "${return_code}" -ne "1" ]; then
+	RPS1='%{$FG[160]%}[%?] %{$reset_color%}'
+fi

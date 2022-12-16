@@ -1,0 +1,6 @@
+(xrandr --output DVI-I-0 --primary --mode 1920x1080 --output HDMI-0 --mode 1920x1080 --left-of DVI-I-0) &
+(sleep .2s && python /home/jordan/wal-script/wal-extended.py --restore) &
+(sleep .2s && picom) &
+(sleep .2s && tint2) &
+(sleep .5s && polybar top-bar) &
+(sleep .2s && ./wifi.sh) &

@@ -1,0 +1,10 @@
+/* fuck okay this is gonna be the color sheet for rofi */
+/* we need to fuck with wal to edit this. */
+/* thanks adi */
+/* import this into rofi config files to use them */
+
+* {
+	bg: #0a0908;
+	fg: #e7dddc;
+	ac: #DD2E2A;
+}

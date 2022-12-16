@@ -1,0 +1,15 @@
+[section/base]
+include-file = $HOME/.config/polybar/master.conf
+include-file = $HOME/.config/polybar/modules.conf
+
+
+; Top bar
+[bar/top-bar]
+inherit = bar/master
+
+offset-x = 0%
+offset-y = 1
+width = 100%
+modules-left = clock right1 right2 right1
+modules-right = left1 volumes left2 memory left1 coreuse
+height = 3%
