@@ -10,9 +10,11 @@
 # and will be the only thing that needs to be run in order
 # to set up our system.
 
-# obviously this needs to be run as sudo.
+# TODO do we need to create a new user?
+# TODO how to make sure that this is being run as the new
+# user?
 
-# get git set up
+# TODO vm arch so that we can test this.
 
 # install all of our needed packages.
 # keep this list lexicographic.
@@ -20,20 +22,22 @@
 sudo pacman -Syu 
 amd-ucode \
 chromium \
+curl \
 discord \
 flameshot \
 git \
 julia \
 jupyter-notebook \ # theres lots of additional ones here
-kitty \ # set as default.
+kitty \
 lightdm \ # Possibly replace lightdm
 lightdm-gtk-greeter \
 neofetch \
 nitrogen \
 nvidia \
+openbox \
 papirus-icon-theme \
 picom \
-pgadmin4
+pgadmin4 \ # hmmm this should be done in docker?
 polybar \
 postgis \
 postgres \ # make sure we are doing version 14. config file mirroing epi
@@ -53,8 +57,70 @@ wget \
 xpdf \ 
 zsh
 
-# TODO install our migration git repo so that we can extract
+# need to set up zsh user. here is the relevant docs:
+# https://zsh.sourceforge.io/Doc/Release/User-Contributions.html#User-Configuration-Functions
+# note that this CANNOT be run as root!
+# This part will require user input.
+# TODO it is quite possible that this will not need
+# to be called bc it may be invoked automatically
+# after zsh is installed.
+zsh-newuser-install -f
+
+# install env vars script and run it.
+git clone https://github.com/tunasplam/arch-env-vars.git
+mv ~/arch-env-vars/environment_variables.sh ~
+sudo chmod +x environment_variables
+source environment_variables.sh
+rm -rf ~/arch-env-vars
+
+# install wal-extended.
+git clone https://github.com/tunasplam/wal-extended.git
+
+# install our migration git repo so that we can extract
 # config files throughout this process.
+# TODO hmm this will have to be done in order to run
+# this script in the first place. So maybe git will
+# need to be setup and then this repo cloned
+# before this scirpt is ever even called.
+git clone https://github.com/tunasplam/Arch-Migration.git
+
+# replace rcs with custom ones
+cp ~/Migration/Configs/.xinitrc ~/.xinitrc
+cp ~/Migration/Configs/.zshrc ~/.zshrc
+cp ~/Migration/Configs/nano/.nanorc ~/.nanorc
+
+# move over some config files
+# TODO some of these folders may not exist at this point
+# when testing we will need to determine which ones
+# need to be created.
+cp ~/Migration/Configs/picom/picom.conf ~/.config/picom
+cp ~/Migration/Configs/openbox/* ~/.config/openbox
+cp ~/Migration/Configs/nitrogen/* ~/.config/nitrogen
+cp ~/Migration/Configs/neofetch/* ~/.config/neofetch
+cp ~/Migration/Configs/rofi/* ~/.config/rofi
+cp ~/Migration/Configs/Thunar/* ~/.config/Thunar
+cp ~/Migration/Configs/tint2/* ~/.config/tint2
+cp -rf ~/Migration/Configs/sublime-text ~/.config/sublime-text
+# TODO verify that sublime packages were setup.
+# TODO set chameleon as default theme for sublime.
+
+# openbox theme
+mkdir ~/.themes
+mkdir ~/.themes/Chameleon
+mkdir ~/.themes/Chameleon/openbox-3
+cp ~/Migration/Configs/openbox-3-chameleon-theme ~/.themes/Chameleon/openbox-3
+
+# overwrite all of the polybar stuff.
+cp -rf ~/Migration/Configs/polybar ~/.config/polybar/
+
+# move over some utility scripts
+cp ~/Migration/wifi.sh ~/wifi.sh
+cp ~/Migration/xrandr.sh ~/xrandr.sh
+sudo chomd +x ~/wifi.sh
+sudo chmod +x ~/xrandr.sh
+
+# replace the nanorc files with our own.
+sudo cp -f ~/Migration/Configs/nano/rcs /usr/share/nano/
 
 # selenium. will running this script as root screw this up?
 # maybe change user at this point?
@@ -67,15 +133,14 @@ fi
 
 # ohmyzsh. cmd straight from the website.
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-# TODO check that it installed correctly.
 
-# move over zshrc and relevant config files.
+# set zsh as default. probably already done.
 
-# set zsh as default
+# move over our theme to .oh-my-zsh directory.
+cp ~/Migration/oh-my-zsh/* ~/.ohmyzsh/themes 
 
-# move over our theme
-
-# set up our custom theme
+source .zshrc
+# TODO confirm ohmyzsh properly set up
 
 # BeautifulDiscord
 # https://gist.github.com/Ovyerus/8104dfb71b9792111d85a1b5207ff650
@@ -95,7 +160,10 @@ makepkg
 cd ..
 rm -rf nerd-fonts-complete\
 
-# TODO set nerd fonts as default.
+# set nerd fonts as default.
+mkdir ~/.config/fontconfig
+cp ~/Migration/Configs/fonts.conf ~/.config/fontconfig
+# TODO verify that font is set properly
 
 # install minecraft
 git clone https://aur.archlinux.org/minecraft-launcher.git
@@ -112,3 +180,6 @@ makepkg
 cd ..
 rm -rf ytmdesktop\
 
+# TODO probably need to do a restart at this point.
+# or at least prompt user to do so themselves
+# after they have reviewed all of the changes.
